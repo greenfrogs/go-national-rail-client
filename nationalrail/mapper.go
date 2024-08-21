@@ -182,6 +182,10 @@ func mapStationBoard(sbr soap.GetStationBoardResult) (*StationBoard, error) {
 		stationBoard.Services = append(stationBoard.Services, mapService(&service))
 	}
 
+	for _, service := range sbr.BusServices.Service {
+		stationBoard.Services = append(stationBoard.Services, mapService(&service))
+	}
+
 	return &stationBoard, nil
 }
 

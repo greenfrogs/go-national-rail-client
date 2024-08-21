@@ -5035,6 +5035,80 @@ func TestGetDepartures(t *testing.T) {
 			},
 			errAssert: assert.NoError,
 		},
+		"Success with buses": {
+			crs: nr.StationCodeGillinghamKent,
+			setupMock: func() *httptest.Server {
+				data, err := os.ReadFile(filepath.Join("testdata", "GetDepartureBoardResponseWithBuses.xml"))
+				require.NoError(t, err)
+
+				ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					w.WriteHeader(http.StatusOK)
+					_, err := w.Write(data)
+					require.NoError(t, err)
+				}))
+				return ts
+			},
+			expectedStationBoard: &nr.StationBoard{
+				CRS:          nr.StationCodeLondonBridge,
+				LocationName: nr.StationNameLondonBridge,
+				Services: []*nr.Service{
+					{
+						ID:   "3108056LNDNBDE_",
+						Type: "train",
+						Destination: nr.Location{
+							CRS:  nr.StationCodeGillinghamKent,
+							Name: nr.StationNameGillinghamKent,
+							Via:  pstr("via Greenwich & Woolwich Arsenal"),
+						},
+						Origins: []*nr.Location{
+							{
+								CRS:  nr.StationCodeKentishTown,
+								Name: nr.StationNameKentishTown,
+							},
+						},
+						Length: 8,
+						Operator: nr.Operator{
+							Code: "TL",
+							Name: "Thameslink",
+						},
+						Platform:                 "4",
+						RetailServiceID:          pstr("TL353900"),
+						EstimatedTimeOfDeparture: pstr("22:22"),
+						ScheduledTimeOfDeparture: pstr("22:18"),
+					},
+					{
+						ID:   "3208056LNDNBDE_",
+						Type: "bus",
+						Destination: nr.Location{
+							CRS:  nr.StationCodeGillinghamKent,
+							Name: nr.StationNameGillinghamKent,
+							Via:  pstr("via Greenwich & Woolwich Arsenal"),
+						},
+						Origins: []*nr.Location{
+							{
+								CRS:  nr.StationCodeKentishTown,
+								Name: nr.StationNameKentishTown,
+							},
+						},
+						Operator: nr.Operator{
+							Code: "TL",
+							Name: "Thameslink",
+						},
+						Platform:                 "BUS",
+						RetailServiceID:          pstr("TL354900"),
+						EstimatedTimeOfDeparture: pstr("23:22"),
+						ScheduledTimeOfDeparture: pstr("23:18"),
+					},
+				},
+				PlatformAvailable: true,
+				Filters: nr.RequestFilters{
+					CRS:          nr.StationCodeGillinghamKent,
+					LocationName: nr.StationNameGillinghamKent,
+				},
+				GeneratedAt: timeFromRFC3339(t, "2024-01-03T22:14:23.3784418Z"),
+			},
+			errAssert: assert.NoError,
+		},
 		"Fail_BadCRS": {
 			crs: nr.CRSCode("test"),
 			setupMock: func() *httptest.Server {

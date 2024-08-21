@@ -238,6 +238,7 @@ type GetStationBoardResult struct {
 	NrccMessages       NrccMessages  `xml:"nrccMessages"`
 	PlatformAvailable  bool          `xml:"platformAvailable"`
 	TrainServices      TrainServices `xml:"trainServices"`
+	BusServices        BusServices   `xml:"busServices"`
 }
 
 type Location struct {
@@ -284,6 +285,10 @@ type Toilet struct {
 }
 
 type TrainServices struct {
+	Service []Service `xml:"service"`
+}
+
+type BusServices struct {
 	Service []Service `xml:"service"`
 }
 
